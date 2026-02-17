@@ -37,8 +37,8 @@ class Task:
     
     def __str__(self):
         status = "✅" if self.completed else "⭕"
-        return f"{status} [{self.id}] {self.title}"
-
+        created = self.created_at[:10] if self.created_at else "неизвестно"
+        return f"{status} [{self.id}] {self.title} (создано: {created})"
 
 class TaskManager:
     """Менеджер задач"""
