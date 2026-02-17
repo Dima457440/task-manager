@@ -59,7 +59,7 @@ class TaskManager:
         import os
         import json
         from task_manager import Task
-        
+
         if os.path.exists(self.filename):
             try:
                 with open(self.filename, 'r', encoding='utf-8') as f:
