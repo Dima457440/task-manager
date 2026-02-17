@@ -47,15 +47,19 @@ class TaskManager:
         self.tasks = []
         self.load_tasks()
         self.next_id = self._get_next_id()
-    
+
     def _get_next_id(self):
         """Получение следующего ID"""
         if not self.tasks:
             return 1
         return max(task.id for task in self.tasks) + 1
-    
+
     def load_tasks(self):
         """Загрузка задач из файла"""
+        import os
+        import json
+        from task_manager import Task
+        
         if os.path.exists(self.filename):
             try:
                 with open(self.filename, 'r', encoding='utf-8') as f:
@@ -65,31 +69,33 @@ class TaskManager:
                 self.tasks = []
         else:
             self.tasks = []
-    
+
     def save_tasks(self):
         """Сохранение задач в файл"""
+        import json
         with open(self.filename, 'w', encoding='utf-8') as f:
             json.dump([task.to_dict() for task in self.tasks], f, ensure_ascii=False, indent=2)
-    
+
     def add_task(self, title, description=""):
         """Добавление новой задачи"""
+        from task_manager import Task
         task = Task(self.next_id, title, description)
         self.tasks.append(task)
         self.next_id += 1
         self.save_tasks()
         return task
-    
+
     def get_all_tasks(self):
         """Получение всех задач"""
         return self.tasks
-    
+
     def get_task_by_id(self, task_id):
         """Получение задачи по ID"""
         for task in self.tasks:
             if task.id == task_id:
                 return task
         return None
-    
+
     def complete_task(self, task_id):
         """Отметка задачи как выполненной"""
         task = self.get_task_by_id(task_id)
@@ -98,7 +104,7 @@ class TaskManager:
             self.save_tasks()
             return True
         return False
-    
+
     def delete_task(self, task_id):
         """Удаление задачи"""
         task = self.get_task_by_id(task_id)
@@ -107,7 +113,19 @@ class TaskManager:
             self.save_tasks()
             return True
         return False
-    
+
+    def edit_task(self, task_id, title=None, description=None):
+        """Редактирование задачи"""
+        task = self.get_task_by_id(task_id)
+        if task:
+            if title:
+                task.title = title
+            if description is not None:
+                task.description = description
+            self.save_tasks()
+            return True
+        return False
+
     def get_stats(self):
         """Получение статистики"""
         total = len(self.tasks)
